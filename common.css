@@ -4,6 +4,8 @@
     font-size: 16px;
 }
 
+/* Tag choosers */
+
 #choosers
 {
     width: 100%;
@@ -16,16 +18,28 @@ select.chooser
     height: 50%;
 }
 
-#buttons
-{
-    text-align: right;
-    margin-bottom: 5px;
-}
+/* Various bits of chrome */
 
 #slider
 {
     margin: 10px 20%;
 }
+
+#spin
+{
+    padding: 15px;
+    position: absolute;
+    top: 0px;
+    left: 0px;
+}
+
+#pictureCount
+{
+    text-align: right;
+    padding: 5px;
+}
+
+/* Photo gallery */
 
 ul.gallery
 {
@@ -50,21 +64,13 @@ li img
     box-shadow: 2px 2px 6px #000;
 }
 
-#spin
-{
-    padding: 15px;
-    position: absolute;
-    top: 0px;
-    left: 0px;
-}
+/* Buttons */
 
-#pictureCount
+#buttons
 {
     text-align: right;
-    padding: 5px;
+    margin-bottom: 5px;
 }
-
-/* Start custom button CSS here */
 
 .btn
 {
@@ -109,7 +115,6 @@ li img
     border-bottom:1px solid #bbb;
 }
 
-/* only needed if implementing separate hover state for buttons */
 .btn:hover span, .btn:hover span span
 {
     cursor:pointer;
