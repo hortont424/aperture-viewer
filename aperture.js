@@ -140,7 +140,8 @@ function loadTags(chooser, data)
     if(alphabeticalSort)
         tags.sort();
     
-    // Create the chooser
+    // Create the chooser with the given tags, inserting it
+    // into the page as well
     createChooser(chooser, tags);
     
     return tags;
@@ -176,16 +177,12 @@ function adjustImageSize(event, ui)
 
 function toggleSortMethod()
 {
+    alphabeticalSort = !alphabeticalSort;
+    
     if(alphabeticalSort)
-    {
-        alphabeticalSort = false;
-        $("#sortSwitchLabel").html("Alphabetical");
-    }
-    else
-    {
-        alphabeticalSort = true;
         $("#sortSwitchLabel").html("Photo Count");
-    }
+    else
+        $("#sortSwitchLabel").html("Alphabetical");
     
     resetSelection();
 }
