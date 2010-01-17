@@ -1,7 +1,7 @@
 alphabeticalSort = false;
 
 toplevelData = null;
-intersectingTags = null;
+allPhotos = null;
 choosers = [];
 
 function updateChoosers()
@@ -25,6 +25,18 @@ function getSelectedTags()
     }
     
     return selectedTags;
+}
+
+function setPictureCount(pc)
+{
+    var pluralizedPix = " pictures";
+    
+    if(pc == 1)
+    {
+        pluralizedPix = " picture";
+    }
+    
+    $("#pictureCount").html(pc + pluralizedPix);
 }
 
 function createChooser(num, tags)
@@ -88,7 +100,7 @@ function loadTags(chooser, data)
 function selectInChooser(num)
 {
     // Delay until intersecting tags have been loaded
-    if(intersectingTags === null)
+    if(allPhotos === null)
     {
         window.setTimeout("selectInChooser("+num+")", 100);
     }
@@ -114,7 +126,7 @@ function selectInChooser(num)
     var total = 0;
 
     // Calculate the intersecting tags
-    $.each(intersectingTags, 
+    $.each(allPhotos, 
         function(inkey,invalue)
         {
             var pictureNames = (invalue + "").split(",");
@@ -150,14 +162,7 @@ function selectInChooser(num)
     );
     
     // Update the count
-    var pluralizedPix = " pictures";
-    
-    if(total == 1)
-    {
-        pluralizedPix = " picture";
-    }
-    
-    $("#pictureCount").html(total + pluralizedPix);
+    setPictureCount(total);
     
     // Pull out the names and create the new chooser!
     names = {};
@@ -183,7 +188,12 @@ function resetSelection()
 {
     $("#choosers").empty();
     $("#images").empty();
-    $("#pictureCount").empty();
+    
+    if(allPhotos)
+    {
+        setPictureCount($.keys(allPhotos).length);
+    }
+    
     choosers = [];
     loadTags(0, toplevelData);
 }
@@ -229,6 +239,14 @@ function main()
     {
         installFancybox();
         
+        $.extend({
+            keys: function(obj){
+                var a = [];
+                $.each(obj, function(k){ a.push(k) });
+                return a;
+            }
+        })
+        
         $("*").ajaxStart(function()
         {
             $("#spin").show();
@@ -240,7 +258,8 @@ function main()
         
         $.getJSON("ap-tags.cgi?pictures=1", function(d)
         {
-            intersectingTags = d;
+            allPhotos = d;
+            setPictureCount($.keys(allPhotos).length);
         });
         $.getJSON("ap-tags.cgi?tags=1", function(d)
         {
