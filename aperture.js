@@ -167,6 +167,13 @@ function loadedSelection()
 {
     $("#spin").hide()
     $("a.zoom").fancybox();
+    $("li").css("width", $("#slider").slider("value"));
+}
+
+function adjustImageSize(event, ui)
+{
+    $("#pictureCount").html(ui.value);
+    $("li").css("width", ui.value);
 }
 
 function main()
@@ -178,6 +185,10 @@ function main()
         $("*").ajaxStop(function() { $("#spin").hide() });
         $.getJSON("ap-tags.cgi?pictures=1", loadIntersections);
         $.getJSON("ap-tags.cgi?tags=1", loadInitialTags);
-        $("#slider").slider();
+        $("#slider").slider({
+            min: 16,
+            max: 400,
+            value: 200,
+            slide: adjustImageSize});
     });
 }
