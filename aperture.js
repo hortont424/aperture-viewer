@@ -7,7 +7,7 @@ choosers = [];
 function updateChoosers()
 {
     // Calculate and update the width of the choosers
-    percentWidth = Math.floor(100 / choosers.length);
+    percentWidth = 100 / choosers.length;
     
     for(var i in choosers)
     {
@@ -44,8 +44,6 @@ function createChooser(num, tags)
     updateChoosers();
     
     $("#choosers").append(choosers[num]);
-    choosers[num].css("display", "none")
-    choosers[num].fadeIn("slow");
 }
 
 function loadTags(chooser, data)

@@ -18,32 +18,36 @@
                 src="aperture.js"></script>
     </head>
     <body id="body">
-        <div id="buttons">
-            <div id='spin'>
-                <img src="images/ajax-loader-white.gif" alt="Loading...">
+        <div id="chrome">
+            <div id="buttons">
+                <div id="spin">
+                    <img src="images/ajax-loader-white.gif" alt="Loading...">
+                </div>
+                <span id='pictureCount'></span>
+                <button type="button" class="btn" onclick="toggleSortMethod()">
+                    <span><span>
+                        <span class="buttonLabel" id="sortSwitchLabel">
+                            Alphabetical
+                        </span>
+                    </span></span>
+                </button>
+                &nbsp;
+                <button type="button" class="btn" onclick="resetSelection()">
+                    <span><span>
+                        <span class="buttonLabel">Reset</span>
+                    </span></span>
+                </button>
+                &nbsp;
+                <button type="button" class="btn" onclick="loadSelection()">
+                    <span><span>
+                        <span class="buttonLabel">Load...</span>
+                    </span></span>
+                </button>
             </div>
-            <span id='pictureCount'></span>
-            <button type="button" class="btn" onclick="toggleSortMethod()">
-                <span><span>
-                    <span class="buttonLabel" id="sortSwitchLabel">Alphabetical</span>
-                </span></span>
-            </button>
-            &nbsp;
-            <button type="button" class="btn" onclick="resetSelection()">
-                <span><span>
-                    <span class="buttonLabel">Reset</span>
-                </span></span>
-            </button>
-            &nbsp;
-            <button type="button" class="btn" onclick="loadSelection()">
-                <span><span>
-                    <span class="buttonLabel">Load...</span>
-                </span></span>
-            </button>
+            <div id="choosers">
+            </div>
+            <div id="slider"></div>
         </div>
-        <div id="choosers">
-        </div>
-        <div id="slider"></div>
         <div id="images"></div>
     </body>
 </html>
