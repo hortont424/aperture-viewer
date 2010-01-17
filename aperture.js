@@ -44,6 +44,8 @@ function createChooser(num, tags)
     updateChoosers();
     
     $("#choosers").append(choosers[num]);
+    choosers[num].css("display", "none")
+    choosers[num].fadeIn("slow");
 }
 
 function loadTags(chooser, data)
@@ -247,11 +249,13 @@ function main()
             toplevelData = d;
             resetSelection();
         });
-        $("#slider").slider({
+        $("#slider").slider(
+        {
             min: 16,
             max: 400,
             value: 200,
-            slide: adjustImageSize});
+            slide: adjustImageSize
+        });
     });
 }
 
