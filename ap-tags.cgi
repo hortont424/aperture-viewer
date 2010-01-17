@@ -113,7 +113,7 @@ foreach $pic (reverse sort @biglist)
    $pic =~ s/^(.*)~~(.*)$/$2/;
 
 print <<END;
-<a href='/$preview'><img src="/$pic" width="100%"/></a>
+<a class="zoom" href='/$preview'><img src="/$pic" width="100%"/></a>
 </li><li>
 END
 
