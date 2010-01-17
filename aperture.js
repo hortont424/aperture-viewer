@@ -1,107 +1,8 @@
-google.load("jquery", "1");
-google.load("jqueryui", "1");
-google.setOnLoadCallback(main);
-
 alphabeticalSort = false;
 
 toplevelData = null;
 intersectingTags = null;
 choosers = [];
-
-function getSelectedTags()
-{
-    selectedTags = [];
-    
-    for(i in choosers)
-        selectedTags.push(choosers[i].val());
-    
-    return selectedTags;
-}
-
-function selectInChooser(num)
-{
-    // Delay until intersecting tags have been loaded
-    if(intersectingTags == null)
-        window.setTimeout("selectInChooser("+num+")", 100);
-    
-    // Hide currently-shown images
-    $("#images").empty();
-    
-    // Remove choosers that are invalidated by the change
-    badChoosers = choosers.slice(num + 1, choosers.length + 1);
-    choosers = choosers.slice(0, num + 1);
-    
-    for(var i in badChoosers)
-        badChoosers[i].remove();
-    
-    // Get the list of selected tags; we only want to display
-    // tags in the next chooser which intersect with all of these
-    tagList = getSelectedTags();
-    
-    var otherTags = {};
-
-    var i, j, ct, total = 0;
-
-    // Calculate the intersecting tags
-    $.each(intersectingTags, 
-        function(inkey,invalue)
-        {
-            var pictureNames = (invalue + "").split(",");
-            ct = 0;
-            
-            for(var i = 0; i < pictureNames.length; i++)
-                if($.inArray(pictureNames[i], tagList) >= 0)
-                    if(++ct == tagList.length)
-                        break;
-
-            if(ct == tagList.length)
-            {
-                for(i = pictureNames.length - 1; i >= 0; --i)
-                if(!otherTags[pictureNames[i]])
-                    otherTags[pictureNames[i]] = 1;
-                else
-                    otherTags[pictureNames[i]] += 1;
-                ++total;
-            }
-        }
-    );
-    
-    // Update the count
-    var pluralizedPix = " pictures"
-    if(total == 1)
-        pluralizedPix = " picture"
-    $("#pictureCount").html(total + pluralizedPix);
-    
-    // Pull out the names and create the new chooser!
-    names = {};
-    hadNames = false;
-    
-    $.each(otherTags, function(key, value)
-    {
-        if($.inArray(key, tagList) < 0)
-        {
-            names[key] = value;
-            hadNames = true;
-        }
-    });
-    
-    if(hadNames)
-        loadTags(num + 1, names)
-}
-
-function createChooser(num, tags)
-{
-    choosers[num] = $("<select id='chooser' size='15'></select>");
-    
-    for(var i in tags)
-        choosers[num].append("<option>" + tags[i] + "</option>");
-    
-    choosers[num].change(function(){selectInChooser(num)});
-    
-    updateChoosers();
-    
-    $("#choosers").append(choosers[num]);
-}
 
 function updateChoosers()
 {
@@ -109,7 +10,40 @@ function updateChoosers()
     percentWidth = Math.floor(100 / choosers.length);
     
     for(var i in choosers)
-        choosers[i].width(percentWidth + "%")
+    {
+        choosers[i].width(percentWidth + "%");
+    }
+}
+
+function getSelectedTags()
+{
+    selectedTags = [];
+    
+    for(var i in choosers)
+    {
+        selectedTags.push(choosers[i].val());
+    }
+    
+    return selectedTags;
+}
+
+function createChooser(num, tags)
+{
+    choosers[num] = $("<select id='chooser' size='15'></select>");
+    
+    for(var i in tags)
+    {
+        choosers[num].append("<option>" + tags[i] + "</option>");
+    }
+    
+    choosers[num].change(function()
+    {
+        selectInChooser(num);
+    });
+    
+    updateChoosers();
+    
+    $("#choosers").append(choosers[num]);
 }
 
 function loadTags(chooser, data)
@@ -134,17 +68,115 @@ function loadTags(chooser, data)
     
     // Pull the sorted list of names into a simple array
     for(var i in tagCounts)
+    {
         tags[i] = tagCounts[i].tag;
+    }
     
     // If the user has chosen to do so, sort alphabetically
     if(alphabeticalSort)
+    {
         tags.sort();
+    }
     
     // Create the chooser with the given tags, inserting it
     // into the page as well
     createChooser(chooser, tags);
     
     return tags;
+}
+
+function selectInChooser(num)
+{
+    // Delay until intersecting tags have been loaded
+    if(intersectingTags === null)
+    {
+        window.setTimeout("selectInChooser("+num+")", 100);
+    }
+    
+    // Hide currently-shown images
+    $("#images").empty();
+    
+    // Remove choosers that are invalidated by the change
+    badChoosers = choosers.slice(num + 1, choosers.length + 1);
+    choosers = choosers.slice(0, num + 1);
+    
+    for(var i in badChoosers)
+    {
+        badChoosers[i].remove();
+    }
+    
+    // Get the list of selected tags; we only want to display
+    // tags in the next chooser which intersect with all of these
+    tagList = getSelectedTags();
+    
+    var otherTags = {};
+
+    var total = 0;
+
+    // Calculate the intersecting tags
+    $.each(intersectingTags, 
+        function(inkey,invalue)
+        {
+            var pictureNames = (invalue + "").split(",");
+            var ct = 0;
+            
+            for(var i = 0; i < pictureNames.length; i++)
+            {
+                if($.inArray(pictureNames[i], tagList) >= 0)
+                {
+                    if(++ct == tagList.length)
+                    {
+                        break;
+                    }
+                }
+            }
+            
+            if(ct == tagList.length)
+            {
+                for(i = pictureNames.length - 1; i >= 0; --i)
+                {
+                    if(!otherTags[pictureNames[i]])
+                    {
+                        otherTags[pictureNames[i]] = 1;
+                    }
+                    else
+                    {
+                        otherTags[pictureNames[i]] += 1;
+                    }
+                }
+                ++total;
+            }
+        }
+    );
+    
+    // Update the count
+    var pluralizedPix = " pictures";
+    
+    if(total == 1)
+    {
+        pluralizedPix = " picture";
+    }
+    
+    $("#pictureCount").html(total + pluralizedPix);
+    
+    // Pull out the names and create the new chooser!
+    names = {};
+    hadNames = false;
+    
+    $.each(otherTags, function(key, value)
+    {
+        if($.inArray(key, tagList) < 0)
+        {
+            names[key] = value;
+            hadNames = true;
+        }
+    });
+    
+    // Don't make a new chooser if there were no subtags!
+    if(hadNames)
+    {
+        loadTags(num + 1, names);
+    }
 }
 
 function resetSelection()
@@ -156,18 +188,18 @@ function resetSelection()
     loadTags(0, toplevelData);
 }
 
+function loadedSelection()
+{
+    $("#spin").hide();
+    $("a.zoom").fancybox();
+    $("li").css("width", $("#slider").slider("value"));
+}
+
 function loadSelection()
 {
     var tags = getSelectedTags().join(",");
     $("#images").load("ap-tags.cgi?pictureTags=" + tags, 0, loadedSelection);
-    $("#spin").show()
-}
-
-function loadedSelection()
-{
-    $("#spin").hide()
-    $("a.zoom").fancybox();
-    $("li").css("width", $("#slider").slider("value"));
+    $("#spin").show();
 }
 
 function adjustImageSize(event, ui)
@@ -180,9 +212,13 @@ function toggleSortMethod()
     alphabeticalSort = !alphabeticalSort;
     
     if(alphabeticalSort)
+    {
         $("#sortSwitchLabel").html("Photo Count");
+    }
     else
+    {
         $("#sortSwitchLabel").html("Alphabetical");
+    }
     
     resetSelection();
 }
@@ -192,8 +228,16 @@ function main()
     $(function()
     {
         installFancybox();
-        $("*").ajaxStart(function() { $("#spin").show() });
-        $("*").ajaxStop(function() { $("#spin").hide() });
+        
+        $("*").ajaxStart(function()
+        {
+            $("#spin").show();
+        });
+        $("*").ajaxStop(function()
+        {
+            $("#spin").hide();
+        });
+        
         $.getJSON("ap-tags.cgi?pictures=1", function(d)
         {
             intersectingTags = d;
@@ -210,3 +254,7 @@ function main()
             slide: adjustImageSize});
     });
 }
+
+google.load("jquery", "1");
+google.load("jqueryui", "1");
+google.setOnLoadCallback(main);

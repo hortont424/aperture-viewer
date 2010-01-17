@@ -5,11 +5,11 @@
         <meta http-equiv="Content-type" content="text/html; charset=utf-8">
         <title>Aperture Archives</title>
         <link rel="stylesheet" type="text/css"
-              href="common.css" media="screen" />
+              href="common.css" media="screen">
         <link rel="stylesheet" type="text/css"
-              href="fancybox/fancybox.css" media="screen" />
+              href="fancybox/fancybox.css" media="screen">
         <link rel="stylesheet" type="text/css"
-              href="jquery-ui.css" media="screen" />
+              href="jquery-ui.css" media="screen">
         <script type="text/javascript" charset="utf-8" 
                 src="http://www.google.com/jsapi"></script>
         <script type="text/javascript"
@@ -19,20 +19,26 @@
     </head>
     <body id="body">
         <div id="buttons">
-            <div id='spin'><img src="images/ajax-loader-white.gif" /></div>
+            <div id='spin'>
+                <img src="images/ajax-loader-white.gif" alt="Loading...">
+            </div>
             <span id='pictureCount'></span>
             <button type="button" class="btn" onclick="toggleSortMethod()">
-                <span><span><b>&nbsp;</b>
-                    <u id="sortSwitchLabel">Alphabetical</u>
+                <span><span>
+                    <span class="buttonLabel" id="sortSwitchLabel">Alphabetical</span>
                 </span></span>
             </button>
             &nbsp;
             <button type="button" class="btn" onclick="resetSelection()">
-                <span><span><b>&nbsp;</b><u>Reset</u></span></span>
+                <span><span>
+                    <span class="buttonLabel">Reset</span>
+                </span></span>
             </button>
             &nbsp;
             <button type="button" class="btn" onclick="loadSelection()">
-                <span><span><b>&nbsp;</b><u>Load...</u></span></span>
+                <span><span>
+                    <span class="buttonLabel">Load...</span>
+                </span></span>
             </button>
         </div>
         <div id="choosers">
