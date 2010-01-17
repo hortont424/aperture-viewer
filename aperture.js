@@ -2,7 +2,9 @@ google.load("jquery", "1");
 google.load("jqueryui", "1");
 google.setOnLoadCallback(main);
 
-toplevelTags = [];
+alphabeticalSort = false;
+
+toplevelData = null;
 intersectingTags = null;
 choosers = [];
 
@@ -110,11 +112,6 @@ function updateChoosers()
         choosers[i].width(percentWidth + "%")
 }
 
-function loadInitialTags(data)
-{
-    toplevelTags = loadTags(0, data);
-}
-
 function loadTags(chooser, data)
 {
     tagCounts = [];
@@ -127,24 +124,26 @@ function loadTags(chooser, data)
     });
     
     // Sort the names, ascending, by number of tagged images
-    tagCounts.sort(function(a,b)
+    if(!alphabeticalSort)
     {
-        return b.count - a.count;
-    });
+        tagCounts.sort(function(a,b)
+        {
+            return b.count - a.count;
+        });
+    }
     
     // Pull the sorted list of names into a simple array
     for(var i in tagCounts)
         tags[i] = tagCounts[i].tag;
     
+    // If the user has chosen to do so, sort alphabetically
+    if(alphabeticalSort)
+        tags.sort();
+    
     // Create the chooser
     createChooser(chooser, tags);
     
     return tags;
-}
-
-function loadIntersections(data)
-{
-    intersectingTags = data;
 }
 
 function resetSelection()
@@ -153,7 +152,7 @@ function resetSelection()
     $("#images").empty();
     $("#pictureCount").empty();
     choosers = [];
-    createChooser(0, toplevelTags);
+    loadTags(0, toplevelData);
 }
 
 function loadSelection()
@@ -172,8 +171,23 @@ function loadedSelection()
 
 function adjustImageSize(event, ui)
 {
-    $("#pictureCount").html(ui.value);
     $("li").css("width", ui.value);
+}
+
+function toggleSortMethod()
+{
+    if(alphabeticalSort)
+    {
+        alphabeticalSort = false;
+        $("#sortSwitchLabel").html("Alphabetical");
+    }
+    else
+    {
+        alphabeticalSort = true;
+        $("#sortSwitchLabel").html("Photo Count");
+    }
+    
+    resetSelection();
 }
 
 function main()
@@ -183,8 +197,15 @@ function main()
         installFancybox();
         $("*").ajaxStart(function() { $("#spin").show() });
         $("*").ajaxStop(function() { $("#spin").hide() });
-        $.getJSON("ap-tags.cgi?pictures=1", loadIntersections);
-        $.getJSON("ap-tags.cgi?tags=1", loadInitialTags);
+        $.getJSON("ap-tags.cgi?pictures=1", function(d)
+        {
+            intersectingTags = d;
+        });
+        $.getJSON("ap-tags.cgi?tags=1", function(d)
+        {
+            toplevelData = d;
+            resetSelection();
+        });
         $("#slider").slider({
             min: 16,
             max: 400,
