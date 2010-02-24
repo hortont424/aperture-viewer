@@ -2,50 +2,48 @@
 
 use Path::Class;
 use Storable;
+use File::Find;
+use Mac::PropertyList qw( :all );
 
 my $ap_path = "/srv/share/public/Photos/Aperture\ Library.aplibrary/";
 my %ap_library;
 
-open(APLIB, "<${ap_path}ApertureData.xml");
-
-while(<APLIB>)
+find(\&wanted, $ap_path);
+sub wanted
 {
-	#if(/<string>(.*aplibrary.*Previews.*)<\/string>/)
-	if(/<string>(.*aplibrary.*Thumbnails.*)<\/string>/)
-	{
-		my $fixurl = $1;
-
-		$fixurl =~ s/\/Users\/hortont\/Pictures//;
-		$fixurl = "/srv/share/public/Photos" . $fixurl;
-
-		my $backup = $fixurl;
-		my $dirname = $fixurl;
-		my $dir = dir($dirname)->parent->parent;
-		$dirname = "$dir";
-		$dirname =~ s/&apos;/\'/g;
-		$dirname =~ s/&amp;/&/g;
-		my $keywords = `grep -r -A 1 "Keywords" \"$dirname\"/Version-*.apversion`;
-		$keywords =~ /\<string\>([^\<]*)\</;
-		@keyword_list = split(", ", $1);
-		
-		my $imageDate = `grep -r -A 1 "ImageDate" \"$dirname\"/Version-*.apversion`;
-		$imageDate =~ /\<date\>([^\<]*)\</;
-		$imageDate = $1;
-		
-		#$keywords =~ s/^.*\<key\>.*$/$1/;
-		#$keywords =~ s/\n//g;
-		
-		
-		
-		if(!grep(/nsfi/,@keyword_list))
-		{
-			foreach $kw (@keyword_list)
-			{
-				#print $kw . ", ";
-				push @{ $ap_library{$kw} }, "${imageDate}~~${backup}";
-			}
-		}
-	}
+    if(/Version-1\.apversion/)
+    {
+        my $plist = parse_plist_file($File::Find::name)->as_perl;
+        my $keywords = $plist->{'keywords'};
+        my @keyword_list = @$keywords;
+        my $imageDate = $plist->{'imageDate'};
+        my $uuid = $plist->{'uuid'};
+        
+        my $preview_name = $File::Find::name;
+        $preview_name =~ s/Database\/Versions/Previews/;
+        $preview_name =~ s/\/[^\/]*\/Version-1.apversion//;
+        $preview_name .= "/" . $uuid . "/";
+        
+        $preview_image_name = "";
+        
+        find(\&wanted_image, $preview_name);
+        
+        sub wanted_image
+        {
+            if(/jpg$/ && !/^thumb_/)
+            {
+                $preview_image_name = $File::Find::name;
+            }
+        }
+        
+        if(!grep(/nsfi/,@keyword_list) && $preview_image_name ne "")
+        {
+            foreach $kw (@keyword_list)
+            {
+                push @{ $ap_library{$kw} }, "${imageDate}~~${preview_image_name}";
+            }
+        }
+    }
 }
 
 print "\n\n\n Keys:\n";
